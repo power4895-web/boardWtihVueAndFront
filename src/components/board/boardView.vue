@@ -74,7 +74,7 @@ export default {
 			console.log('this.board.no', this.board.title)
 			this.$router.push({
 				name: 'update',
-				params: {
+				query: {
 					no: this.board.no,
 					flag: this.board.flag
 				}
@@ -85,7 +85,7 @@ export default {
 			console.log('this.board.no', this.board.flag)
 			this.$router.push({
 				name: 'reply',
-				params: {
+				query: {
 					no: this.board.no,
 					flag: this.board.flag,
 					title: '',

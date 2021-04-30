@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1>{{this.$route.params.flag == 1 ? '공지사항':'문의사항'}} {{no !== '' && this.action !== "reply" ? '수정':'등록'}}</h1> 
+		<h1>{{this.$route.query.flag == 1 ? '공지사항':'문의사항'}} {{no !== '' && this.action !== "reply" ? '수정':'등록'}}</h1> 
 
 		<div class="AddWrap">
 			<form>
@@ -181,9 +181,9 @@ export default {
     },
 
     data: function () {
-		const no = this.$route.params.no;
-		const flag = this.$route.params.flag;
-		const action = this.$route.params.action;
+		const no = this.$route.query.no;
+		const flag = this.$route.query.flag;
+		const action = this.$route.query.action;
 		this.action = action;
 		return {
 			board: {
