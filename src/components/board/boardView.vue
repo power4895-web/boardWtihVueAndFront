@@ -12,7 +12,7 @@
 					</colgroup>
 
 					<tr>
-						<td >admin <span style="font-size:12px;color:gray;">{{board.reg_date| moment('YYYY-MM-DD')}}</span></td>
+						<td >admin<span style="font-size:12px;color:gray;">{{board.reg_date| moment('YYYY-MM-DD')}}</span></td>
 						<td style="border-top:none;text-align:right;font-size:12px"> 조회 : {{board.read_cnt}}</td>
 					</tr>
 

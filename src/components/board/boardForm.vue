@@ -27,10 +27,10 @@
 		</div>	
 	</div>
 </template>
-
+ 
 <script>
 export default {
-	mounted() {
+	mounted() {  //수정일 때 데이터 가져오기
 		if(this.board.no !== undefined){
 			this.fnGetView();
 		}
@@ -54,7 +54,7 @@ export default {
             alert('error')
             })
 		},
-		fnList(){
+		fnList(){ //목록
              this.$router.push('/board/boardList/'+ this.board.flag) 
 		},
 		fnAddProc: function () {
