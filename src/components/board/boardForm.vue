@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1>{{this.$route.query.flag == 1 ? '공지사항':'문의사항'}} {{no !== '' && this.action !== "reply" ? '수정':'등록'}}</h1> 
+		<h1>{{this.$route.query.flag == 1 ? '공지사항':'문의사항'}} {{no !== undefined && this.action !== "reply" ? '수정':'등록'}}</h1>  
 
 		<div class="AddWrap">
 			<form>
@@ -72,6 +72,7 @@ export default {
 			}
 			if(this.action == undefined){
 				//fid 번호가져오는 쿼리
+				console.log('this.board.flag', this.board.flag)
 				this.$http.post('/api/board/selectBoardFid/'+ this.board.flag)
 				.then((res) => {
 					//콜백 안에다가 write넣기
@@ -85,7 +86,6 @@ export default {
 					})
 					.then((res) => {
 					if (res.data.success == true) {
-						alert(res.data.message);
 						this.$router.push('/board/boardList/' + this.board.flag) 
 					}
 					if (res.data.success == false) {
@@ -126,7 +126,6 @@ export default {
 						})
 						.then((res) => {
 						if (res.data.success == true) {
-							alert(res.data.message);
 							this.$router.push('/board/boardList/' + this.board.flag) 
 						}
 						if (res.data.success == false) {
@@ -184,6 +183,7 @@ export default {
 		const no = this.$route.query.no;
 		const flag = this.$route.query.flag;
 		const action = this.$route.query.action;
+		console.log('flagflagflagflag',flag)
 		this.action = action;
 		return {
 			board: {

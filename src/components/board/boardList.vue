@@ -79,7 +79,7 @@ export default {
 		,fnAdd() {
 			this.$router.push({
 				name: 'write',
-				params: {
+				query: {
 					flag : this.board.flag
 				}
 			})
