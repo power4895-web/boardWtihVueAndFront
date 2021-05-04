@@ -1,6 +1,23 @@
 <template>
 	<div>
 		<h1>{{this.board.flag == "1" ? '공지사항':'문의사항'}}</h1> 
+		<!-- <h1>start_page : {{paging.start_page}}</h1> 
+		<h1>total_page : {{paging.total_page}}</h1> 
+		<h1>end_page : {{paging.end_page}}</h1> 
+		<h1>page : {{paging.page}}</h1> 
+		<h1>totalCount : {{paging.totalCount}}</h1> 
+		<h1>start_row : {{paging.start_row}}</h1> 
+		<h1>total_page : {{paging.total_page}}</h1>  -->
+
+		<div class="searchWrap">
+			<label class="bold">검색 대상</label>
+			<select v-model="board.searchKey">
+				<option value="title">제목</option>
+				<option value="content">내용</option>
+			</select>
+			<label class="bold">검색 키워드</label>
+			<input type="text" v-model="board.searchValue" @keyup.enter="fnSearch" placeholder="검색 키워드를 입력하세요."/><a href="javascript:;" @click="fnSearch" class="btnSearch btn">검색</a>
+		</div>
 
 		<div class="listWrap">
 			<table class="tbList">
@@ -14,12 +31,10 @@
 					<th>no</th>
 					<th>아이디</th>
 					<th class="textCenter">제목</th>
-					<!-- <th>내용</th> -->
 					<th>날짜</th>
-					<!-- <th>조회수</th> -->
 				</tr>
 				<tr v-for="(row, idx) in list" :key="idx">
-					<td>{{idx + 1}}</td>
+					<td class="text-center">{{paging.totalCount - ((paging.page-1) * paging.start_row + idx)}}</td>
 					<td>{{row.user_id}}</td>
 					<td class="textCenter">
 						<div :style="{paddingLeft:row.lev * 12 + 'px'}">
@@ -27,9 +42,7 @@
 							<a href="javascript:;" @click="fnView(`${row.no}`)">{{row.title}}</a>
 						</div>
 					</td>
-					<!-- <td>{{row.content}}</td> -->
 					<td>{{row.reg_date| moment('YYYY-MM-DD')}}</td>
-					<!-- <td>{{row.read_cnt}}</td> -->
 				</tr>
 
 				<tr v-if="list.length == 0">
@@ -37,6 +50,25 @@
 				</tr>
 			</table>
 		</div>
+
+		<!-- 번호누르기 -->
+		<div class="pagination" v-if="paging.totalCount > 0">
+			<a href="javascript:;" @click="fnPage(1)" class="first">&lt;&lt;</a>
+			<a href="javascript:;" v-if="paging.start_page > 10" @click="fnPage(`${paging.start_page-1}`)"  class="prev">&lt;</a>
+			<template v-for=" (n,index) in paginavigation()">
+				<template v-if="paging.page==n">
+					<strong :key="index">{{n}}</strong>
+				</template>
+				<template v-else>
+					<a href="javascript:;" @click="fnPage(`${n}`)" :key="index">{{n}}</a>
+				</template>
+			</template>
+			<!-- 맨끝 -->
+			<a href="javascript:;" v-if="paging.total_page > paging.end_page" @click="fnPage(`${paging.end_page+1}`)"  class="next">&gt;</a>  
+			<!-- 맨앞 -->
+			<a href="javascript:;" @click="fnPage(`${paging.total_page}`)" class="last">&gt;&gt;</a>
+		</div>
+
 
 		<div class="btnRightWrap">
 			<a @click="fnAdd" class="btn">등록</a>
@@ -46,18 +78,27 @@
 </template>
 
 <script>
-/* .re{text-align:left;padding-right:  this.board.flag*12px;} */
 export default {
 	data() { //변수생성
 		return{
 			list:'' //리스트 데이터
 			,board: {
 				flag:'' //게시판 숫자처리
+				,searchValue:this.$route.query.searchValue
+				,searchKey: 'title'
+				,page:this.$route.query.page ? this.$route.query.page:1
+				,totalCount:''
 			}
-			,activeColor: 'red'
-			,fontSize: 30
-			,style1 : {textAlign:'left', paddingLeft:'100px' }
-			,test : 0
+			,paging:'' //페이징 데이터
+			,start_page:'' //시작페이지
+			,page:this.$route.query.page ? this.$route.query.page:1
+			,paginavigation:function() { //페이징 처리 for문 커스텀
+				var pageNumber = [];
+				var start_page = this.paging.start_page;
+				var end_page = this.paging.end_page;
+				for (var i = start_page; i <= end_page; i++) pageNumber.push(i);
+				return pageNumber;
+			}
 		}
 	}
 	,created() { //페이지 시작하면은 자동 함수 실행
@@ -69,12 +110,28 @@ export default {
 	}
 	, methods:{
 		fnGetList() { //데이터 가져오기 함수
-			this.$http.post('/api/board/boardList/'+ this.board.flag)
-			.then((response) => {
-				this.list = response.data
-				// this.flag = response.data.flag
+			console.log('searchValue', this.board.searchValue)
+			console.log('searchKey', this.board.searchKey);
+			console.log('page', this.board.page);
+			//카운트를 먼저 구하기
+			this.$http.post('/api/board/selectBoardCount/'+ this.board.flag,{
+					board: this.board
 			})
-
+			//페이징처리를 위해 카운트를 list api로 보내기			
+			.then((response) => {
+				this.board.totalCount=response.data[0].cnt;
+				this.board.page=this.page;
+				this.$http.post('/api/board/boardList/'+ this.board.flag,{
+						board: this.board
+				})
+				.then((response) => {
+					//데이터 입혀주기
+					console.log('받아온 데이터',response.data.rows)
+					console.log('받아온 페이징 데이터',response.data.paging)
+					this.list = response.data.rows
+					this.paging = response.data.paging;
+				})
+			})
 		}
 		,fnAdd() {
 			this.$router.push({
@@ -83,7 +140,6 @@ export default {
 					flag : this.board.flag
 				}
 			})
-			// this.$router.push("/board/boardForm");
 		}
 		,fnView(idx) {
 			console.log('idx', idx)
@@ -96,13 +152,24 @@ export default {
 				}
 			})
 		}
+		,fnSearch() { //검색
+			this.fnGetList();
+		}
+		,fnPage(n) {//페이징 이
+			if(this.page != n) {
+				this.page = n;
+				this.fnGetList();
+			}
+		}
 	}
 }
 </script>
 
 <style scoped>
-	.searchWrap{border:1px solid #888; border-radius:5px; text-align:center; padding:20px 0; margin-bottom:40px;}
-	.searchWrap input{width:60%; height:36px; border-radius:3px; padding:0 10px; border:1px solid #888;}
+	.searchWrap{border:1px solid rgba(136, 136, 136, 0.836); border-radius:5px; text-align:center; padding:1px 0; margin-bottom:40px; text-align:center; background-color: #f8f9fa}
+	.searchWrapRight{border:1px solid #888; border-radius:5px; text-align:center; padding:20px 0; margin-bottom:40px;text-align:right;}
+	.searchWrap input{width:80%; height:36px; border-radius:3px; padding:0 10px; border:1px solid #888; margin-left:10px;}
+	.searchWrap select{height:36px; border-radius:3px; padding:0 10px; border:1px solid #888; margin-left:10px; font-size: medium; margin:10px;}
 	.searchWrap .btnSearch{display:inline-block; margin-left:10px;}
 	.tbList th{border-top:1px solid #888;}
 	.tbList th, .tbList td{border-bottom:1px solid #eee; padding:5px 0;}
@@ -115,4 +182,6 @@ export default {
 	.pagination span{display:inline-block; padding:0 5px; color:#333;}
 	.pagination a{text-decoration:none; display:inline-blcok; padding:0 5px; color:#666;}
 	.textCenter{text-align:left;}
+	.bg-light {background-color: #f8f9fa !important;}
+	.bold {font-weight: bold}
 </style>

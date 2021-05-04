@@ -111,8 +111,6 @@ export default {
 					this.board.fid = res.data[0].fid
 					this.board.lev = res.data[0].lev
 					this.board.stp = res.data[0].stp
-					
-
 
 					//stp 업데이트 한번 해주기
 					this.$http.post('/api/board/updateBoardReplyStp', { 
@@ -139,8 +137,6 @@ export default {
 					.catch(function () {
 						alert('error')
 					})
-
-	
 				})
 				.catch(function () {
 					alert('error')
