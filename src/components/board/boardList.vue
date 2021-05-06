@@ -18,7 +18,7 @@
 			<label class="bold">검색 키워드</label>
 			<input type="text" v-model="board.searchValue" @keyup.enter="fnSearch" placeholder="검색 키워드를 입력하세요."/><a href="javascript:;" @click="fnSearch" class="btnSearch btn">검색</a>
 		</div>
-
+		<div class="btnRightWrap">Total : {{paging.totalCount}} [{{paging.page}} /{{paging.total_page}}]</div>
 		<div class="listWrap">
 			<table class="tbList">
 				<colgroup>
@@ -34,7 +34,7 @@
 					<th>날짜</th>
 				</tr>
 				<tr v-for="(row, idx) in list" :key="idx">
-					<td class="text-center">{{paging.totalCount - ((paging.page-1) * paging.start_row + idx)}}</td>
+					<td class="text-center">{{paging.totalCount - ((paging.page-1) * 15 + idx)}}</td>    
 					<td>{{row.user_id}}</td>
 					<td class="textCenter">
 						<div :style="{paddingLeft:row.lev * 12 + 'px'}">
