@@ -1,14 +1,6 @@
 <template>
 	<div>
 		<h1>{{this.board.flag == "1" ? '공지사항':'문의사항'}}</h1> 
-		<!-- <h1>start_page : {{paging.start_page}}</h1> 
-		<h1>total_page : {{paging.total_page}}</h1> 
-		<h1>end_page : {{paging.end_page}}</h1> 
-		<h1>page : {{paging.page}}</h1> 
-		<h1>totalCount : {{paging.totalCount}}</h1> 
-		<h1>start_row : {{paging.start_row}}</h1> 
-		<h1>total_page : {{paging.total_page}}</h1>  -->
-
 		<div class="searchWrap">
 			<label class="bold">검색 대상</label>
 			<select v-model="board.searchKey">
@@ -110,9 +102,7 @@ export default {
 	}
 	, methods:{
 		fnGetList() { //데이터 가져오기 함수
-			console.log('searchValue', this.board.searchValue)
-			console.log('searchKey', this.board.searchKey);
-			console.log('page', this.board.page);
+
 			//카운트를 먼저 구하기
 			this.$http.post('/api/board/selectBoardCount/'+ this.board.flag,{
 					board: this.board
@@ -126,8 +116,6 @@ export default {
 				})
 				.then((response) => {
 					//데이터 입혀주기
-					console.log('받아온 데이터',response.data.rows)
-					console.log('받아온 페이징 데이터',response.data.paging)
 					this.list = response.data.rows
 					this.paging = response.data.paging;
 				})
@@ -142,8 +130,6 @@ export default {
 			})
 		}
 		,fnView(idx) {
-			console.log('idx', idx)
-			console.log('fnView====flag', this.board.flag)
 			this.$router.push({
 				name: 'boardView',
 				query: {
