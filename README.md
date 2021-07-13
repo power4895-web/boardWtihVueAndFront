@@ -1,4 +1,5 @@
 # frontend
+vue.js를 활용하여 게시판의 프론트 엔드 작업
 
 ## Project setup
 ```
